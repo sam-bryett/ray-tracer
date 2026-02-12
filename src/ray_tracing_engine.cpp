@@ -54,6 +54,7 @@ Vec3 RayTracingEngine::calculateColour(Ray &ray, Scene &scene, uint32_t seed) {
 
   Vec3 incoming_light{};
   Vec3 light_colour{1, 1, 1};
+
   for (int i = 0; i < max_light_bounces; i++) {
     RayRecord ray_record = scene.traceRay(ray);
     HitRecord record = ray_record.record;
@@ -63,10 +64,14 @@ Vec3 RayTracingEngine::calculateColour(Ray &ray, Scene &scene, uint32_t seed) {
       Vec3 reflection = material.calculateReflection(
           ray, record.normal, incoming_light, light_colour, seed);
 
+      // If light is fully absorbed, don't create a reflection ray
       if (reflection.length() <= epsilon) {
         break;
       }
-
+      if (dotProduct(reflection, record.normal) < 0) {
+        std::clog << "Error: Reflection ray is below surface normal" << '\n';
+        exit(1);
+      }
       // Offset to avoid self intersection with new ray
       Vec3 offset = epsilon * record.normal;
       ray = Ray(record.point + offset, reflection);
