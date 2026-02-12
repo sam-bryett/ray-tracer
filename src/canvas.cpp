@@ -17,7 +17,7 @@ void Canvas::writePixel(Pixel pixel) {
 
 int Canvas::toByte(double t) const {
   if (t < 0) {
-    std::clog << "error!" << '\n';
+    // std::clog << "error!" << '\n';
     t = 0;
   }
   if (t > 1) {
