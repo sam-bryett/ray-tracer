@@ -15,7 +15,7 @@ Vec3 Material::calculateReflection(const Ray &incoming_ray,
     // Random uniform distribution of outgoing ray
     light_colour = light_colour * this->colour;
     outgoing_ray_direction = normalise(random_vector(-1, 1, seed));
-    if (dotProduct(outgoing_ray_direction, incoming_ray.direction()) < 0) {
+    if (dotProduct(outgoing_ray_direction, surface_normal) < 0) {
       outgoing_ray_direction = outgoing_ray_direction * -1;
     }
 
