@@ -1,4 +1,5 @@
 #include "sphere.h"
+#include "primitive.h"
 #include "ray.h"
 
 void Sphere::setMaterial(const Material &material) {
@@ -19,6 +20,9 @@ HitRecord Sphere::raycast(const Ray &ray) {
   }
   // std::clog << "discriminant not 0" << '\n';
   double t = (-b - std::sqrt(discriminant)) / (2.0 * a);
+  if (t < 1e-6) {
+    return HitRecord{false};
+  }
   // if (t > 0) {
   // std:: clog << "t value is " << t << '\n';
   // }
