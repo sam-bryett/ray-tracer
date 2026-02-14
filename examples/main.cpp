@@ -23,16 +23,23 @@ int main(int argc, char **argv) {
   scene.addPrimitive(sphere);
 
   auto sphere2 = std::make_shared<Sphere>(radius, Vec3(1, 0, 1));
-  sphereMaterial.colour = Vec3(0.1, 0.1, 0.9);
+  sphereMaterial.colour = Vec3(0.1, 0.9, 0.1);
   sphere2->setMaterial(sphereMaterial);
 
   auto sphere3 = std::make_shared<Sphere>(radius, Vec3(-1, 0, 1));
-  sphereMaterial.emission_strength = 4;
+  sphereMaterial.emission_strength = 2;
   sphereMaterial.colour = Vec3(0.1, 0.9, 0.1);
   sphere3->setMaterial(sphereMaterial);
 
+  auto sphere4 = std::make_shared<Sphere>(radius, Vec3(2.5, 0, 1));
+  sphereMaterial.emission_strength = 1;
+  sphereMaterial.emission_colour = Vec3(0.9, 0.9, 0.5);
+  sphereMaterial.colour = Vec3(0.1, 0.9, 0.1);
+  sphere4->setMaterial(sphereMaterial);
+
   scene.addPrimitive(sphere2);
   scene.addPrimitive(sphere3);
+  scene.addPrimitive(sphere4);
 
   auto ground = std::make_shared<Sphere>(100, Vec3(0, -100.5, 2));
   const Vec3 blue(0.1, 0.2, 0.9);
@@ -50,7 +57,7 @@ int main(int argc, char **argv) {
 
   RayTracingEngine raytracer = RayTracingEngine();
 
-  raytracer.addMultiSampling(MSAA_4X);
+  raytracer.addMultiSampling(50);
 
   Canvas canvas{image_width, image_height};
   raytracer.render(camera, scene, canvas);
