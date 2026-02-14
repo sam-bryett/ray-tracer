@@ -6,11 +6,11 @@ class Ray;
 
 class Material {
 public:
-  float smoothness;
-  Vec3 colour;
+  float smoothness{};
+  Vec3 colour{};
   Vec3 specular_colour{.9, .9, .9};
 
-  float emission_strength;
+  float emission_strength{};
   Vec3 emission_colour{.9, .9, .9};
 
   Material() : colour{}, smoothness{} {};
