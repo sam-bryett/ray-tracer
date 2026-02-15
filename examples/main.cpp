@@ -5,34 +5,38 @@
 #include "ray_tracing_engine.h"
 #include "scene.h"
 #include "sphere.h"
+#include "tinted.h"
 #include "vec3.h"
 #include <memory>
 
 int main(int argc, char **argv) {
 
   Scene scene;
-  Vec3 sphere_origin = Vec3(0, 0, 2);
+  Vec3 sphere_origin = Vec3(-0.1, 0, 1);
   float radius = 0.5;
   Vec3 red = Vec3(0.9, 0.2, 0.2);
   float smoothness = 0;
 
   auto sphere = std::make_shared<Sphere>(radius, sphere_origin);
   Material sphereMaterial = Material{red, smoothness};
-  sphere->setMaterial(sphereMaterial);
+
+  // shared pointer for material subclasses
+  auto tintedSphere = std::make_shared<TintedMaterial>(red, smoothness);
+  sphere->setMaterial(tintedSphere);
 
   scene.addPrimitive(sphere);
 
   auto sphere2 = std::make_shared<Sphere>(radius, Vec3(1, 0, 1));
-  sphereMaterial.colour = Vec3(0.1, 0.9, 0.1);
-  sphere2->setMaterial(sphereMaterial);
+  sphereMaterial.colour = Vec3(0.2, 0.9, 0.2);
+  sphere2->setMaterial(tintedSphere);
 
-  auto sphere3 = std::make_shared<Sphere>(radius, Vec3(-1, 0, 1));
-  sphereMaterial.emission_strength = 2;
+  auto sphere3 = std::make_shared<Sphere>(radius, Vec3(-1, 0, 0));
+  sphereMaterial.emission_strength = 14;
   sphereMaterial.colour = Vec3(0.1, 0.9, 0.1);
   sphere3->setMaterial(sphereMaterial);
 
   auto sphere4 = std::make_shared<Sphere>(radius, Vec3(2.5, 0, 1));
-  sphereMaterial.emission_strength = 1;
+  sphereMaterial.emission_strength = 8;
   sphereMaterial.emission_colour = Vec3(0.9, 0.9, 0.5);
   sphereMaterial.colour = Vec3(0.1, 0.9, 0.1);
   sphere4->setMaterial(sphereMaterial);
