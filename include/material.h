@@ -21,4 +21,8 @@ public:
                                    const Vec3 &surface_normal,
                                    Vec3 &incoming_light, Vec3 &light_colour,
                                    uint32_t seed);
+
+  Material(const Material &) = default;
+  ~Material() = default;
+  Material(Material &&maerial) noexcept = default;
 };

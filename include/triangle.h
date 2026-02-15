@@ -11,13 +11,10 @@ public:
            double z)
       : p1{x1, y1, z}, p2{x2, y2, z}, p3{x3, y3, z} {}
 
-  void setMaterial(const Material &material);
-
   HitRecord raycast(const Ray &ray);
 
 private:
   Vec3 p1;
   Vec3 p2;
   Vec3 p3;
-  Material material;
 };
