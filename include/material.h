@@ -17,7 +17,8 @@ public:
   Material(Vec3 colour, float smoothness = 0.0f)
       : colour{colour}, smoothness{smoothness} {}
 
-  Vec3 calculateReflection(const Ray &incoming_ray, const Vec3 &surface_normal,
-                           Vec3 &incoming_light, Vec3 &light_colour,
-                           uint32_t seed);
+  virtual Vec3 calculateReflection(const Ray &incoming_ray,
+                                   const Vec3 &surface_normal,
+                                   Vec3 &incoming_light, Vec3 &light_colour,
+                                   uint32_t seed);
 };
