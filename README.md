@@ -1,2 +1,2 @@
-# 3d-renderer
-3D renderer from scratch using C++
+# ray-tracer
+Monte-Carlo path tracing engine from scratch using C++.
