@@ -89,20 +89,6 @@ void Scene::buildBVH() {
 
   Vec3 box_colour = Vec3(0.15, 0.15, 0.18);
   int i = 0;
-  for (auto prim : primitives) {
-    std::clog << "this prim is " << i << " and its min, max are "
-              << prim->getMin() << " and " << prim->getMax() << '\n';
-  }
-  for (auto node : nodes) {
-    std::clog << "node is " << node.min << " " << node.max << '\n';
-    if (node.min == node.max) {
-      continue;
-    }
-    std::clog << "this guy has " << node.num_primitives << "prims starting at "
-              << node.first_primitive << '\n';
-    std::clog << "children are " << node.left_node << " and " << node.right_node
-              << '\n';
-  }
 }
 
 //     std::make_shared<BoundingBox>(totalMin, totalMax);
@@ -144,7 +130,6 @@ void Scene::subdivide(int node_index) {
   }
 
   double centre = dotProduct(totalMax + totalMin, axis) * 0.5;
-  std::clog << "centre is " << centre << '\n';
   if (root.num_primitives <= 1) {
     return;
   }

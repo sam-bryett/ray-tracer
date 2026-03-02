@@ -1,77 +1,65 @@
 #include "camera.h"
 #include "canvas.h"
 #include "material.h"
+#include "msaa.h"
 #include "ray_tracing_engine.h"
 #include "scene.h"
 #include "sphere.h"
-#include "tinted.h"
-#include "triangle.h"
 #include "vec3.h"
+#include <chrono>
 #include <memory>
 
 int main(int argc, char **argv) {
-
+  auto start = std::chrono::high_resolution_clock::now();
   Scene scene;
   Vec3 sphere_origin = Vec3(-0.1, 0, 1);
-  float radius = 0.5;
   Vec3 red = Vec3(0.9, 0.2, 0.2);
   float smoothness = 0;
 
-  auto sphere = std::make_shared<Sphere>(radius, sphere_origin);
   Material sphereMaterial = Material{red, smoothness};
 
-  // shared pointer for material subclasses
-  auto tintedSphere = std::make_shared<TintedMaterial>(red, smoothness);
-  sphere->setMaterial(tintedSphere);
+  // shared pointer for material int gridSize = 10;
+  int gridSize = 100;
+  double spacing = .5; // distance between sphere centers
+  double radius = 0.2;
 
-  scene.addPrimitive(sphere);
+  double offset = (gridSize - 1) * spacing * 0.5;
 
-  auto sphere2 = std::make_shared<Sphere>(radius, Vec3(1, 0, 1));
-  sphereMaterial.colour = Vec3(0.2, 0.9, 0.2);
-  sphere2->setMaterial(tintedSphere);
+  for (int i = 0; i < gridSize; i++) {
+    for (int j = 0; j < gridSize; j++) {
 
-  auto sphere3 = std::make_shared<Sphere>(radius, Vec3(-2, 0, 0));
-  sphereMaterial.colour = Vec3(0.5, 0.8, 0.1);
-  sphere3->setMaterial(sphereMaterial);
+      double x = i * spacing - offset;
+      double y = j * spacing - offset;
+      double z = 0.0; // flat grid on ground
 
-  auto sphere4 = std::make_shared<Sphere>(radius, Vec3(2.5, 0, 1));
-  sphereMaterial.emission_strength = 8;
-  sphereMaterial.emission_colour = Vec3(0.9, 0.9, 0.5);
-  sphereMaterial.colour = Vec3(0.1, 0.9, 0.1);
-  sphere4->setMaterial(sphereMaterial);
+      Vec3 center(x, y, z);
+      auto sphere = std::make_shared<Sphere>(radius, center);
+      sphere->setMaterial(sphereMaterial);
+      scene.addPrimitive(sphere);
+    }
+  }
 
-  scene.addPrimitive(sphere2);
-  scene.addPrimitive(sphere3);
-  scene.addPrimitive(sphere4);
-
-  auto ground = std::make_shared<Sphere>(100, Vec3(0, -100.5, 2));
-  const Vec3 blue(0.1, 0.2, 0.9);
-  ground->setMaterial(blue);
-  // scene.addPrimitive(ground);
-  Vec3 camera_origin(0, 0, -3);
+  Vec3 camera_origin(0, 0, -30);
   Camera camera{camera_origin};
 
   int focal_length = 1;
-  int image_height = 700;
+  int image_height = 720;
   int image_width = image_height * 16.0 / 9;
-
-  Vec3 p1 = Vec3{-2, 0, 1};
-  Vec3 p2 = Vec3{-1.5, 1, 2};
-  Vec3 p3 = Vec3{-0.5, 0.5, 0};
-  auto triangle = std::make_shared<Triangle>(p1, p2, p3);
-  triangle->setMaterial(blue);
-  // scene.addPrimitive(triangle);
 
   camera.setResolution(image_width, image_height);
   camera.setFocalLength(focal_length);
 
   RayTracingEngine raytracer = RayTracingEngine();
 
-  raytracer.addMultiSampling(50);
+  raytracer.addMultiSampling(1);
 
   Canvas canvas{image_width, image_height};
   raytracer.render(camera, scene, canvas);
-
   canvas.createImage();
+  auto stop = std::chrono::high_resolution_clock::now();
+  auto duration =
+      std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+  std::clog << "time to complete: " << duration.count() / 1000000.0
+            << "microseconds\n";
   return 0;
 }
