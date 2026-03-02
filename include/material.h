@@ -13,7 +13,7 @@ public:
   float emission_strength{};
   Vec3 emission_colour{.9, .9, .9};
 
-  Material() : colour{}, smoothness{} {};
+  Material() : colour{.9, .9, .9}, smoothness{} {};
   Material(Vec3 colour, float smoothness = 0.0f)
       : colour{colour}, smoothness{smoothness} {}
 

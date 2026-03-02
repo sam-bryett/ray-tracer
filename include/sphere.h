@@ -8,6 +8,9 @@ public:
   Vec3 origin() const { return orig; }
 
   HitRecord raycast(const Ray &ray) override;
+  Vec3 getMin() override;
+  Vec3 getMax() override;
+  Vec3 getCentre() override;
 
 private:
   double rad;

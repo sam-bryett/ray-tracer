@@ -1,3 +1,4 @@
+#include "material.h"
 #include "primitive.h"
 #include "ray.h"
 #include "vec3.h"
@@ -7,8 +8,8 @@
 inline double d_min(double a, double b) { return (a <= b) ? a : b; }
 inline double d_max(double a, double b) { return (a >= b) ? a : b; }
 
-static std::optional<HitRecord> slabIntersection(const Vec3 &l, const Vec3 &h,
-                                                 const Ray &ray) {
+static std::optional<double> slabIntersection(const Vec3 &l, const Vec3 &h,
+                                              const Ray &ray, Vec3 &normal) {
   auto o = ray.origin();
   auto r = ray.direction();
   double epsilon = 1e-6;
@@ -38,7 +39,6 @@ static std::optional<HitRecord> slabIntersection(const Vec3 &l, const Vec3 &h,
 
   std::array<double, 6> planes = {t_low_x,  t_low_y,  t_low_z,
                                   t_high_x, t_high_y, t_high_z};
-  Vec3 normal;
   auto index = 0;
   for (auto p : planes) {
     if (p == t_close) {
@@ -51,8 +51,8 @@ static std::optional<HitRecord> slabIntersection(const Vec3 &l, const Vec3 &h,
     index++;
   }
   auto t_far = d_min(t_far_z, d_min(t_far_x, t_far_y));
-  if (t_far < t_close or t_close < epsilon) {
+  if (t_far < t_close or t_far < epsilon) {
     return {};
   }
-  return HitRecord{true, t_close, ray.parametric(t_close), normal};
+  return (t_close >= epsilon) ? t_close : t_far;
 }

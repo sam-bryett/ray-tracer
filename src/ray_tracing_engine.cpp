@@ -7,7 +7,8 @@
 #include <cstdint>
 
 void RayTracingEngine::render(Camera &camera, Scene &scene, Canvas &canvas) {
-  // Loop over every pixel in the image
+  scene.buildBVH();
+  //   Loop over every pixel in the image
   for (int j = 0; j < camera.getImageHeight(); j++) {
     for (int i = 0; i < camera.getImageWidth(); i++) {
       std::vector<Ray> rays;
@@ -61,6 +62,7 @@ Vec3 RayTracingEngine::calculateColour(Ray &ray, Scene &scene, uint32_t seed) {
     if (record.hit) {
       auto material = record.material;
       // Use material of surface to modify light and colour
+      // std::clog << "hello" << '\n';
       Vec3 reflection = material->calculateReflection(
           ray, record.normal, incoming_light, light_colour, seed);
 

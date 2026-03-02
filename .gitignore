@@ -1,2 +1,3 @@
+objs/models/
+.cache
 build/
-.cache/

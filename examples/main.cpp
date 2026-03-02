@@ -1,11 +1,11 @@
 #include "camera.h"
 #include "canvas.h"
 #include "material.h"
-#include "msaa.h"
 #include "ray_tracing_engine.h"
 #include "scene.h"
 #include "sphere.h"
 #include "tinted.h"
+#include "triangle.h"
 #include "vec3.h"
 #include <memory>
 
@@ -30,9 +30,8 @@ int main(int argc, char **argv) {
   sphereMaterial.colour = Vec3(0.2, 0.9, 0.2);
   sphere2->setMaterial(tintedSphere);
 
-  auto sphere3 = std::make_shared<Sphere>(radius, Vec3(-1, 0, 0));
-  sphereMaterial.emission_strength = 14;
-  sphereMaterial.colour = Vec3(0.1, 0.9, 0.1);
+  auto sphere3 = std::make_shared<Sphere>(radius, Vec3(-2, 0, 0));
+  sphereMaterial.colour = Vec3(0.5, 0.8, 0.1);
   sphere3->setMaterial(sphereMaterial);
 
   auto sphere4 = std::make_shared<Sphere>(radius, Vec3(2.5, 0, 1));
@@ -48,13 +47,20 @@ int main(int argc, char **argv) {
   auto ground = std::make_shared<Sphere>(100, Vec3(0, -100.5, 2));
   const Vec3 blue(0.1, 0.2, 0.9);
   ground->setMaterial(blue);
-  scene.addPrimitive(ground);
-  Vec3 camera_origin(0, 0, -2);
+  // scene.addPrimitive(ground);
+  Vec3 camera_origin(0, 0, -3);
   Camera camera{camera_origin};
 
   int focal_length = 1;
-  int image_height = 720;
+  int image_height = 700;
   int image_width = image_height * 16.0 / 9;
+
+  Vec3 p1 = Vec3{-2, 0, 1};
+  Vec3 p2 = Vec3{-1.5, 1, 2};
+  Vec3 p3 = Vec3{-0.5, 0.5, 0};
+  auto triangle = std::make_shared<Triangle>(p1, p2, p3);
+  triangle->setMaterial(blue);
+  // scene.addPrimitive(triangle);
 
   camera.setResolution(image_width, image_height);
   camera.setFocalLength(focal_length);
@@ -65,6 +71,7 @@ int main(int argc, char **argv) {
 
   Canvas canvas{image_width, image_height};
   raytracer.render(camera, scene, canvas);
+
   canvas.createImage();
   return 0;
 }

@@ -29,3 +29,7 @@ HitRecord Sphere::raycast(const Ray &ray) {
   Vec3 normal = normalise(point - orig);
   return HitRecord{true, t, point, normal, this->material.get()};
 }
+
+Vec3 Sphere::getMin() { return origin() - Vec3(rad, rad, rad); }
+Vec3 Sphere::getMax() { return origin() + Vec3(rad, rad, rad); }
+Vec3 Sphere::getCentre() { return origin(); }

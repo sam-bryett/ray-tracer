@@ -4,6 +4,7 @@
 #include <memory>
 
 class Ray;
+class BoundingBox;
 struct HitRecord {
   bool hit{};
   double t{};
@@ -14,10 +15,13 @@ struct HitRecord {
 
 class Primitive {
 public:
-  Primitive(){};
+  Primitive() { material = std::make_shared<Material>(); };
   std::shared_ptr<Material> material{};
   void setMaterial(std::shared_ptr<Material> material);
   void setMaterial(const Material &material);
 
   virtual HitRecord raycast(const Ray &ray) = 0;
+  virtual Vec3 getMin() = 0;
+  virtual Vec3 getMax() = 0;
+  virtual Vec3 getCentre() = 0;
 };
