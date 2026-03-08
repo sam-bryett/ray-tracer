@@ -29,26 +29,14 @@ RayRecord Scene::traceRay(const Ray &ray) {
   // Check if ray hit any bvh nodes and traverse down tree with DFS
   while (stack.size() > 0) {
     BVHNode &box = nodes[stack.back()];
-    // std::clog << "node is " << stack.back() << "and box is " << box.min
-    //           << " and " << box.max << '\n';
-    // std::clog << "node left is " << box.left_node << " and node right is "
-    //           << box.right_node << '\n';
     stack.pop_back();
-
-    // std::clog << "box is " << box.min << " and " << box.max << '\n';
-    // std::clog << "node left is " << box.left_node << " and node right is "
-    //           << box.right_node << '\n';
-    // std::clog << "ray is " << ray.direction() << " and " << ray.origin()
-    //           << '\n';
 
     Vec3 n = Vec3(1, 1, 1);
     std::optional<double> t = slabIntersection(box.min, box.max, ray, n);
-    // std::clog << " t is " << t.value_or(1) << '\n';
     if (!t) {
       continue;
     }
 
-    // std::clog << " t passed\n";
     if (box.num_primitives > 0) {
       if (t > closest_hit.t) {
         continue;
@@ -57,8 +45,6 @@ RayRecord Scene::traceRay(const Ray &ray) {
       for (int i = 0; i < box.num_primitives; i++) {
 
         auto obj = primitives[i + box.first_primitive];
-        //   std::clog << "obj is " << i + box.first_primitive << " and obj is "
-        //             << obj->getMin() << " and " << obj->getMax() << '\n';
         HitRecord current_record = obj->raycast(ray);
 
         if (current_record.hit && current_record.t >= epsilon) {
@@ -90,11 +76,6 @@ void Scene::buildBVH() {
   Vec3 box_colour = Vec3(0.15, 0.15, 0.18);
   int i = 0;
 }
-
-//     std::make_shared<BoundingBox>(totalMin, totalMax);
-// auto tintedMaterial = std::make_shared<TintedMaterial>();
-// box->setMaterial(tintedMaterial);
-// addPrimitive(box);
 
 void Scene::subdivide(int node_index) {
   BVHNode &root = nodes[node_index];
