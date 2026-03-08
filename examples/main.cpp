@@ -60,6 +60,6 @@ int main(int argc, char **argv) {
   auto duration =
       std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
   std::clog << "time to complete: " << duration.count() / 1000000.0
-            << "microseconds\n";
+            << "seconds\n";
   return 0;
 }
