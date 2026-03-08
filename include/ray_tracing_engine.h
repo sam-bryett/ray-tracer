@@ -18,7 +18,7 @@ constexpr Vec3 background_intensity(1, 1, 1);
 class RayTracingEngine {
 public:
   RayTracingEngine() = default;
-  int max_light_bounces = 3;
+  int max_light_bounces = 10;
 
   void render(Camera &camera, Scene &scene, Canvas &canvas);
 

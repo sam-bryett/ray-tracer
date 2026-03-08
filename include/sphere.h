@@ -7,12 +7,12 @@ public:
   double radius() const { return rad; }
   Vec3 origin() const { return orig; }
 
-  void setMaterial(const Material &material) override;
-
   HitRecord raycast(const Ray &ray) override;
+  Vec3 getMin() override;
+  Vec3 getMax() override;
+  Vec3 getCentre() override;
 
 private:
   double rad;
   Vec3 orig;
-  Material material;
 };

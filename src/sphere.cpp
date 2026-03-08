@@ -1,9 +1,8 @@
 #include "sphere.h"
+#include "material.h"
+#include "primitive.h"
 #include "ray.h"
-
-void Sphere::setMaterial(const Material &material) {
-  this->material = material;
-}
+#include <memory>
 
 HitRecord Sphere::raycast(const Ray &ray) {
   Vec3 oc = ray.origin() - orig;
@@ -19,11 +18,18 @@ HitRecord Sphere::raycast(const Ray &ray) {
   }
   // std::clog << "discriminant not 0" << '\n';
   double t = (-b - std::sqrt(discriminant)) / (2.0 * a);
+  if (t < 1e-6) {
+    return HitRecord{false};
+  }
   // if (t > 0) {
   // std:: clog << "t value is " << t << '\n';
   // }
   Vec3 point = ray.parametric(t);
   // std::clog << "point of intersection is " << point << '\n';
   Vec3 normal = normalise(point - orig);
-  return HitRecord{true, t, point, normal, this->material};
+  return HitRecord{true, t, point, normal, this->material.get()};
 }
+
+Vec3 Sphere::getMin() { return origin() - Vec3(rad, rad, rad); }
+Vec3 Sphere::getMax() { return origin() + Vec3(rad, rad, rad); }
+Vec3 Sphere::getCentre() { return origin(); }

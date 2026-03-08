@@ -6,18 +6,23 @@ class Ray;
 
 class Material {
 public:
-  float smoothness;
-  Vec3 colour;
+  float smoothness{};
+  Vec3 colour{};
   Vec3 specular_colour{.9, .9, .9};
 
-  float emission_strength;
+  float emission_strength{};
   Vec3 emission_colour{.9, .9, .9};
 
-  Material() : colour{}, smoothness{} {};
+  Material() : colour{.9, .9, .9}, smoothness{} {};
   Material(Vec3 colour, float smoothness = 0.0f)
       : colour{colour}, smoothness{smoothness} {}
 
-  Vec3 calculateReflection(const Ray &incoming_ray, const Vec3 &surface_normal,
-                           Vec3 &incoming_light, Vec3 &light_colour,
-                           uint32_t seed);
+  virtual Vec3 calculateReflection(const Ray &incoming_ray,
+                                   const Vec3 &surface_normal,
+                                   Vec3 &incoming_light, Vec3 &light_colour,
+                                   uint32_t seed);
+
+  Material(const Material &) = default;
+  ~Material() = default;
+  Material(Material &&maerial) noexcept = default;
 };

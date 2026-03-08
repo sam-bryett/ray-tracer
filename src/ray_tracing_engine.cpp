@@ -7,7 +7,8 @@
 #include <cstdint>
 
 void RayTracingEngine::render(Camera &camera, Scene &scene, Canvas &canvas) {
-  // Loop over every pixel in the image
+  scene.buildBVH();
+  //   Loop over every pixel in the image
   for (int j = 0; j < camera.getImageHeight(); j++) {
     for (int i = 0; i < camera.getImageWidth(); i++) {
       std::vector<Ray> rays;
@@ -59,22 +60,18 @@ Vec3 RayTracingEngine::calculateColour(Ray &ray, Scene &scene, uint32_t seed) {
     RayRecord ray_record = scene.traceRay(ray);
     HitRecord record = ray_record.record;
     if (record.hit) {
-      Material material = record.material;
+      auto material = record.material;
       // Use material of surface to modify light and colour
-      Vec3 reflection = material.calculateReflection(
+      // std::clog << "hello" << '\n';
+      Vec3 reflection = material->calculateReflection(
           ray, record.normal, incoming_light, light_colour, seed);
 
       // If light is fully absorbed, don't create a reflection ray
       if (reflection.length() <= epsilon) {
         break;
       }
-      if (dotProduct(reflection, record.normal) < 0) {
-        std::clog << "Error: Reflection ray is below surface normal" << '\n';
-        exit(1);
-      }
       // Offset to avoid self intersection with new ray
-      Vec3 offset = epsilon * record.normal;
-      ray = Ray(record.point + offset, reflection);
+      ray = Ray(record.point, reflection);
 
     } else {
       light_colour = light_colour * background;

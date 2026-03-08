@@ -1,6 +1,8 @@
 #pragma once
 #include <array>
+#include <random>
 #include <span>
+#include <vector>
 
 struct Sample {
   double sx;
@@ -18,6 +20,20 @@ constexpr std::array<Sample, 4> MSAA_4_PATTERN = {
     Sample{-2.0 / 16, -6.0 / 16}, Sample{-6.0 / 16, 2.0 / 16},
     Sample{2.0 / 16, 6.0 / 16}, Sample{6.0 / 16, -2.0 / 16}};
 
+inline std::vector<Sample> generateRandomPattern(int sampleCount) {
+  std::vector<Sample> pattern;
+  pattern.reserve(sampleCount);
+
+  std::mt19937 gen(42);
+  std::uniform_real_distribution<double> dis(-0.5, 0.5);
+
+  for (int i = 0; i < sampleCount; i++) {
+    pattern.push_back(Sample{dis(gen), dis(gen)});
+  }
+
+  return pattern;
+}
+
 inline std::span<const Sample> setMsaa(int msaa) {
   switch (msaa) {
   case NO_MSAA:
@@ -27,6 +43,6 @@ inline std::span<const Sample> setMsaa(int msaa) {
   case MSAA_4X:
     return MSAA_4_PATTERN;
   default:
-    return NO_MSAA_PATTERN;
+    return generateRandomPattern(msaa);
   }
 }

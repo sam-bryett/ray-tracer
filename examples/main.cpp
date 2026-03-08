@@ -6,39 +6,40 @@
 #include "scene.h"
 #include "sphere.h"
 #include "vec3.h"
+#include <chrono>
 #include <memory>
 
 int main(int argc, char **argv) {
-
+  auto start = std::chrono::high_resolution_clock::now();
   Scene scene;
-  Vec3 sphere_origin = Vec3(0, 0, 2);
-  float radius = 0.5;
+  Vec3 sphere_origin = Vec3(-0.1, 0, 1);
   Vec3 red = Vec3(0.9, 0.2, 0.2);
   float smoothness = 0;
 
-  auto sphere = std::make_shared<Sphere>(radius, sphere_origin);
   Material sphereMaterial = Material{red, smoothness};
-  sphere->setMaterial(sphereMaterial);
 
-  scene.addPrimitive(sphere);
+  // shared pointer for material int gridSize = 10;
+  int gridSize = 100;
+  double spacing = .5; // distance between sphere centers
+  double radius = 0.2;
 
-  auto sphere2 = std::make_shared<Sphere>(radius, Vec3(1, 0, 1));
-  sphereMaterial.colour = Vec3(0.1, 0.1, 0.9);
-  sphere2->setMaterial(sphereMaterial);
+  double offset = (gridSize - 1) * spacing * 0.5;
 
-  auto sphere3 = std::make_shared<Sphere>(radius, Vec3(-1, 0, 1));
-  sphereMaterial.emission_strength = 4;
-  sphereMaterial.colour = Vec3(0.1, 0.9, 0.1);
-  sphere3->setMaterial(sphereMaterial);
+  for (int i = 0; i < gridSize; i++) {
+    for (int j = 0; j < gridSize; j++) {
 
-  scene.addPrimitive(sphere2);
-  scene.addPrimitive(sphere3);
+      double x = i * spacing - offset;
+      double y = j * spacing - offset;
+      double z = 0.0; // flat grid on ground
 
-  auto ground = std::make_shared<Sphere>(100, Vec3(0, -100.5, 2));
-  const Vec3 blue(0.1, 0.2, 0.9);
-  ground->setMaterial(blue);
-  scene.addPrimitive(ground);
-  Vec3 camera_origin(0, 0, -2);
+      Vec3 center(x, y, z);
+      auto sphere = std::make_shared<Sphere>(radius, center);
+      sphere->setMaterial(sphereMaterial);
+      scene.addPrimitive(sphere);
+    }
+  }
+
+  Vec3 camera_origin(0, 0, -30);
   Camera camera{camera_origin};
 
   int focal_length = 1;
@@ -50,10 +51,15 @@ int main(int argc, char **argv) {
 
   RayTracingEngine raytracer = RayTracingEngine();
 
-  raytracer.addMultiSampling(MSAA_4X);
+  raytracer.addMultiSampling(1);
 
   Canvas canvas{image_width, image_height};
   raytracer.render(camera, scene, canvas);
   canvas.createImage();
+  auto stop = std::chrono::high_resolution_clock::now();
+  auto duration =
+      std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+  std::clog << "time to complete: " << duration.count() / 1000000.0
+            << "microseconds\n";
   return 0;
 }

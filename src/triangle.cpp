@@ -1,9 +1,7 @@
 #include "triangle.h"
 #include "primitive.h"
 #include "ray.h"
-void Triangle::setMaterial(const Material &material) {
-  this->material = material;
-}
+#include <algorithm>
 
 HitRecord Triangle::raycast(const Ray &ray) {
   // Moller–Trumbore intersection algorithm
@@ -43,5 +41,21 @@ HitRecord Triangle::raycast(const Ray &ray) {
   }
 
   Vec3 point = ray.parametric(t);
-  return HitRecord{true, t, point, normal, this->material};
+  return HitRecord{true, t, point, normal, this->material.get()};
 }
+
+Vec3 Triangle::getMin() {
+  double x = std::min({p1.x, p2.x, p3.x});
+  double y = std::min({p1.y, p2.y, p3.y});
+  double z = std::min({p1.z, p2.z, p3.z});
+  return Vec3(x, y, z);
+}
+
+Vec3 Triangle::getMax() {
+  double x = std::max({p1.x, p2.x, p3.x});
+  double y = std::max({p1.y, p2.y, p3.y});
+  double z = std::max({p1.z, p2.z, p3.z});
+  return Vec3(x, y, z);
+}
+
+Vec3 Triangle::getCentre() { return (1.0 / 3) * (p1 + p2 + p3); }

@@ -8,6 +8,9 @@ Vec3 Material::calculateReflection(const Ray &incoming_ray,
                                    Vec3 &incoming_light, Vec3 &light_colour,
                                    uint32_t seed) {
   Vec3 outgoing_ray_direction{};
+  Vec3 emitted_light = this->emission_strength * this->emission_colour;
+  incoming_light = incoming_light + emitted_light * light_colour;
+
   // Randomly decide between specular or diffuse reflection from smoothness
   double specular_probability = random_double(0, 1, seed);
 
@@ -20,6 +23,8 @@ Vec3 Material::calculateReflection(const Ray &incoming_ray,
     }
 
   } else {
+    std::clog << "diffuse reflection not implemented!" << '\n';
+    exit(1);
     outgoing_ray_direction = normalise(random_vector(-1, 1, seed));
     light_colour = light_colour * this->specular_colour;
     auto d = incoming_ray.direction();
@@ -27,9 +32,6 @@ Vec3 Material::calculateReflection(const Ray &incoming_ray,
     // Reflection formula
     outgoing_ray_direction = d - 2 * dotProduct(d, n) * n;
   }
-
-  Vec3 emitted_light = this->emission_strength * this->emission_colour;
-  incoming_light = incoming_light + emitted_light * light_colour;
 
   // Return zero vector if no light reflected
   return outgoing_ray_direction;
