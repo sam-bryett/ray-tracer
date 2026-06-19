@@ -9,10 +9,10 @@
 #include <chrono>
 #include <memory>
 
+
 int main(int argc, char **argv) {
   auto start = std::chrono::high_resolution_clock::now();
   Scene scene;
-  Vec3 sphere_origin = Vec3(-0.1, 0, 1);
   Vec3 red = Vec3(0.9, 0.2, 0.2);
   float smoothness = 0;
 
@@ -24,22 +24,8 @@ int main(int argc, char **argv) {
   double radius = 0.2;
 
   double offset = (gridSize - 1) * spacing * 0.5;
-
-  for (int i = 0; i < gridSize; i++) {
-    for (int j = 0; j < gridSize; j++) {
-
-      double x = i * spacing - offset;
-      double y = j * spacing - offset;
-      double z = 0.0; // flat grid on ground
-
-      Vec3 center(x, y, z);
-      auto sphere = std::make_shared<Sphere>(radius, center);
-      sphere->setMaterial(sphereMaterial);
-      scene.addPrimitive(sphere);
-    }
-  }
-
-  Vec3 camera_origin(0, 0, -30);
+  makeGrid(scene, gridSize, spacing, offset, sphereMaterial);
+  Vec3 camera_origin(0, 0, -10);
   Camera camera{camera_origin};
 
   int focal_length = 1;

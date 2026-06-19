@@ -20,20 +20,8 @@ void RayTracingEngine::render(Camera &camera, Scene &scene, Canvas &canvas) {
         rays.push_back(ray);
       }
 
-      // Pixel is an edge if samples hit different objects
-      // auto object = scene.traceRay(rays[0]).object;
-      // bool isEdge = false;
-      // for (auto i = 1; i < rays.size(); i++) {
-      //   auto newObj = scene.traceRay(rays[i]).object;
-      //   if (newObj != object) {
-      //     isEdge = true;
-      //     break;
-      //   }
-      // }
-
       Vec3 colour{};
       uint32_t seed = j * camera.getImageHeight() + i;
-      // For edge pixels, take the average of each samples colour
       Vec3 sum{};
       for (auto ray : rays) {
         sum = calculateColour(ray, scene, seed) + sum;
