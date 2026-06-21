@@ -1,5 +1,6 @@
 #pragma once
 #include <array>
+#include "random.h"
 #include <random>
 #include <span>
 #include <vector>
@@ -32,6 +33,12 @@ inline std::vector<Sample> generateRandomPattern(int sampleCount) {
   }
 
   return pattern;
+}
+
+inline Sample sampleSquareOffset() {
+    double offset_x = random_double(-0.5, 0.5);
+    double offset_y = random_double(-0.5, 0.5);
+    return Sample{offset_x, offset_y};
 }
 
 inline std::span<const Sample> setMsaa(int msaa) {

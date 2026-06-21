@@ -8,11 +8,21 @@
 inline double d_min(double a, double b) { return (a <= b) ? a : b; }
 inline double d_max(double a, double b) { return (a >= b) ? a : b; }
 
+inline double toGamma(double x) {
+    if (x > 0)
+        return std::sqrt(x);
+    return 0;
+}
+
+inline Vec3 toGamma(Vec3 &v) {
+    return Vec3{toGamma(v.x), toGamma(v.y), toGamma(v.z)};
+}
+
 static std::optional<double> slabIntersection(const Vec3 &l, const Vec3 &h,
                                               const Ray &ray, Vec3 &normal) {
   auto o = ray.origin();
   auto r = ray.direction();
-  double epsilon = 1e-6;
+  double epsilon = 1e-4;
 
   // Remove zeroes
   auto rx = 1.0 / r.x;

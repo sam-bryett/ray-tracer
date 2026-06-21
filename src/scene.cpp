@@ -21,7 +21,7 @@ RayRecord Scene::traceRay(const Ray &ray) {
   closest_hit.t = std::numeric_limits<float>::infinity();
   std::shared_ptr<Primitive> object;
 
-  double epsilon = 1e-8;
+  double epsilon = 1e-4;
 
   std::vector<int> stack;
   stack.push_back(0);
@@ -32,7 +32,7 @@ RayRecord Scene::traceRay(const Ray &ray) {
     stack.pop_back();
 
     Vec3 n = Vec3(1, 1, 1);
-    std::optional<double> t = slabIntersection(box.min, box.max, ray, n);
+    std::optional<double>t = slabIntersection(box.min, box.max, ray, n);
     if (!t) {
       continue;
     }
