@@ -1,15 +1,17 @@
 #include "scene.h"
+#include "random.h"
 #include "scenes/scene_builder.h"
 #include "sphere.h"
 
-void makeGrid(Scene &scene, int gridSize, float spacing, float offset,
+void makeGrid(Scene &scene, int grid_size, float spacing, 
               Material sphereMaterial, float radius = .2) {
-  for (int i = 0; i < gridSize; i++) {
-    for (int j = 0; j < gridSize; j++) {
+  for (int i = 0; i < grid_size; i++) {
+    for (int j = 0; j < grid_size; j++) {
 
+      float offset = (grid_size * (radius)) / 2.0;
       double x = i * spacing - offset;
       double y = j * spacing - offset;
-      double z = 0.0; // flat grid on ground
+      double z = 1; 
 
       Vec3 center(x, y, z);
       auto sphere = std::make_shared<Sphere>(radius, center);
@@ -21,13 +23,12 @@ void makeGrid(Scene &scene, int gridSize, float spacing, float offset,
 
 Scene makeGridScene() {
     Scene scene;
-    int gridSize{100};
+    int grid_size{1000};
     float spacing{0.5};
-    float offset{0.5};
-    Vec3 red{0.9, 0.2, 0.2};
-    float smoothness{0.5};
-    Material sphereMaterial = Material{red, smoothness};
-    makeGrid(scene, gridSize, spacing, offset, sphereMaterial);
+    Vec3 colour{1, 1, 1};
+    float smoothness{1};
+    Material sphereMaterial = Material{colour, smoothness};
+    makeGrid(scene, grid_size, spacing, sphereMaterial);
     return scene;
 }
 
@@ -91,7 +92,7 @@ Scene makeSimpleGreyScene() {
 
 Scene smoothnessDemo()  {
   Scene scene;
-  Vec3 sphere_origin = Vec3(-6, 0, 0);
+  Vec3 sphere_origin = Vec3(-5, 0, 0);
   float radius = 0.5;
   Vec3 grey = Vec3(1,1,1);
   float smoothness = 0;
@@ -113,31 +114,25 @@ Scene smoothnessDemo()  {
 
 Scene fuzzDemo()  {
   Scene scene;
-  Vec3 sphere_origin = Vec3(-1.5, 0, 0);
+  Vec3 sphere_origin = Vec3(-4, 0, 0);
   float radius = 0.5;
   Vec3 grey = Vec3(1,1,1);
   float smoothness = 1;
-
-  auto metal1 = std::make_shared<Sphere>(radius, sphere_origin);
-  Material sphereMaterial = Material{grey, smoothness};
-  sphere_origin = sphere_origin + Vec3(1.5,0,0);
-  metal1->setMaterial(sphereMaterial);
-  scene.addPrimitive(metal1);
-
+  float fuzz = 0;
   
 
-  auto sphere = std::make_shared<Sphere>(radius, sphere_origin);
-  sphere_origin = sphere_origin + Vec3(1.5,0,0);
-  sphere->setMaterial(Material{grey, 0});
-  scene.addPrimitive(sphere);
-    
-  auto metal2 = std::make_shared<Sphere>(radius, sphere_origin);
-  sphere_origin = sphere_origin + Vec3(1.5,0,0);
-  metal2->setMaterial(Material{grey, smoothness});
-  scene.addPrimitive(metal2);
+  for (int i = 0; i < 6; i++) {
+      auto sphere = std::make_shared<Sphere>(radius, sphere_origin);
+      Vec3 colour = random_vec(0.0,1.0);
+      Material sphereMaterial = Material{colour, smoothness};
+      sphereMaterial.fuzz = fuzz;
+      fuzz += 0.2;
+      sphere_origin = sphere_origin + Vec3(1.5,0,0);
+      sphere->setMaterial(sphereMaterial);
+      scene.addPrimitive(sphere);
+    }
   auto ground = std::make_shared<Sphere>(100, Vec3(0, -100.5, 2));
-  ground->setMaterial(Vec3(0, 0.8, 0.2));
+  ground->setMaterial(grey);
   scene.addPrimitive(ground);
-  return scene;
   return scene;
 }

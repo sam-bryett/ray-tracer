@@ -1,4 +1,5 @@
 #include "ray_tracing_engine.h"
+#include "ml/adaptive_sampling.h"
 #include "bsdf.h"
 #include "camera.h"
 #include "canvas.h"

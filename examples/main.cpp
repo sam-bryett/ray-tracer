@@ -10,13 +10,13 @@
 
 int main(int argc, char **argv) {
   auto start = std::chrono::high_resolution_clock::now();
-  Scene scene = fuzzDemo(); 
+  Scene scene = makeGridScene(); 
     
   Vec3 camera_origin(0, 0, -5);
   Camera camera{camera_origin};
 
   int focal_length = 1;
-  int image_height = 720;
+  int image_height = 1080;
   int image_width = image_height * 16.0 / 9;
 
   camera.setResolution(image_width, image_height);
@@ -24,7 +24,8 @@ int main(int argc, char **argv) {
 
   RayTracingEngine raytracer = RayTracingEngine();
 
-  raytracer.addMultiSampling(25);
+  raytracer.addMultiSampling(10);
+  raytracer.setMaxLightBounces(20);
 
   Canvas canvas{image_width, image_height};
   raytracer.render(camera, scene, canvas);
