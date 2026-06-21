@@ -13,7 +13,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${SANITIZER_FLAGS}")
 
 # Gather source files
-file(GLOB LIB_SOURCES src/*.cpp)
+file(GLOB_RECURSE LIB_SOURCES src/*.cpp)
 
 # Create the library
 add_library(RayTracerLib ${LIB_SOURCES})
@@ -31,4 +31,11 @@ target_sources(main
   examples/main.cpp
 )
 target_link_libraries(main PRIVATE RayTracerLib)
+
+add_executable(debug_rng)
+target_sources(debug_rng
+  PRIVATE
+  examples/debug_rng.cpp
+)
+target_link_libraries(debug_rng PRIVATE RayTracerLib)
 

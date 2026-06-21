@@ -15,7 +15,8 @@ public:
     this->z = z;
   }
 
-  double length() const { return std::sqrt(x * x + y * y + z * z); }
+  constexpr double length_squared() const { return x * x + y * y + z * z; }
+  constexpr double length() const { return std::sqrt(length_squared()); }
 
   friend Vec3 operator+(const Vec3 &a, const Vec3 &t) {
     return Vec3{t.x + a.x, t.y + a.y, t.z + a.z};
