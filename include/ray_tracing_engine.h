@@ -18,14 +18,16 @@ constexpr Vec3 background_intensity(1, 1, 1);
 class RayTracingEngine {
 public:
   RayTracingEngine() = default;
-  int max_light_bounces = 10;
 
   void render(Camera &camera, Scene &scene, Canvas &canvas);
 
   void addMultiSampling(int samplesPerPixel);
 
+  void setMaxLightBounces(int light_bounces);
+
   Vec3 calculateColour(Ray &ray, Scene &scene, uint32_t seed);
 
 private:
-  std::span<const Sample> msaaSamples = setMsaa(0);
+  int samples_per_pixel = 1;
+  int max_light_bounces = 10;
 };
