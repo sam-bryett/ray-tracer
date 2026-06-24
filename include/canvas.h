@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 #include <ostream>
-#include <cstdint>
+#include <vector>
 #include <vector>
 #include "vec3.h"
 
@@ -25,6 +25,7 @@ public:
   void setPixelByScreen(Pixel pixel, int x, int y);
   void setPixelByCartesian(Pixel pixel, int x, int y);
   void setPixelByIndex(Pixel pixel, int index);
+  void setPixelByBuffer(const std::vector<float> &colours);
   void createImage();
   int getWidth() { return width; }
   int getHeight() { return height; }

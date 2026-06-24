@@ -1,41 +1,59 @@
 #include "ray_tracing_engine.h"
 #include "ml/adaptive_sampling.h"
 #include "bsdf.h"
+#include "msaa.h"
 #include "camera.h"
 #include "canvas.h"
-#include "msaa.h"
 #include "ray.h"
 #include "utility.h"
+#include "oidn.h"
 #include "scene.h"
 #include <cstdint>
 
 void RayTracingEngine::render(Camera &camera, Scene &scene, Canvas &canvas) {
   scene.buildBVH();
+  
   //   Loop over every pixel in the image
-  for (int j = 0; j < camera.getImageHeight(); j++) {
-    for (int i = 0; i < camera.getImageWidth(); i++) {
-      std::vector<Ray> rays;
-      rays.reserve(samples_per_pixel);
+  auto width = camera.getImageWidth();
+  auto height = camera.getImageHeight();
 
-      // Generate a ray for each sample
+  // initialise buffer
+  buffer = Buffer(width, height);
+
+  for (int j = 0; j < height; j++) {
+    for (int i = 0; i < width; i++) {
+
+      int idx = j * width + i;
+      Vec3 colour{};
+
+      HitRecord first_hit_record{};
+
       for (size_t k = 0; k < samples_per_pixel; k++) {
         Sample offset = sampleSquareOffset();
+
+        // Generate a ray for each sample
         Ray ray = camera.generateRay(i + offset.sx, j + offset.sy);
-        rays.push_back(ray);
+
+        colour = calculateColour(ray, scene, first_hit_record, idx) + colour;
       }
 
-      Vec3 colour{};
-      uint32_t seed = j * camera.getImageHeight() + i;
-      Vec3 sum{};
-      for (auto ray : rays) {
-        sum = calculateColour(ray, scene, seed) + sum;
-        seed++;
-      }
-      colour = sum / samples_per_pixel;
-      colour = toGamma(colour);
-      canvas.setPixelByScreen(colour, i, j);
+      colour = colour / samples_per_pixel;
+      addPixelData(buffer, idx, colour, first_hit_record);
     }
   }
+  
+  if (denoise_enabled) {
+    denoise(buffer);
+  }
+
+  for (auto &c : buffer.color) {
+    c = toGamma(c);
+  }
+  canvas.setPixelByBuffer(buffer.color);
+}
+
+void RayTracingEngine::setDenoiser(bool denoise_enabled) {
+  this->denoise_enabled = denoise_enabled;
 }
 
 void RayTracingEngine::setMaxLightBounces(int light_bounces) {
@@ -46,9 +64,9 @@ void RayTracingEngine::addMultiSampling(int samples_per_pixel) {
   this->samples_per_pixel = samples_per_pixel;
 }
 
-Vec3 RayTracingEngine::calculateColour(Ray &ray, Scene &scene, uint32_t seed) {
+Vec3 RayTracingEngine::calculateColour(Ray &ray, Scene &scene, HitRecord &first_hit, uint32_t seed) {
 
-  double epsilon = 1e-4;
+  double epsilon = 1e-6;
 
   Vec3 incoming_light{};
   Vec3 light_colour{1, 1, 1};
@@ -56,6 +74,7 @@ Vec3 RayTracingEngine::calculateColour(Ray &ray, Scene &scene, uint32_t seed) {
   for (int i = 0; i < max_light_bounces; i++) {
 
     HitRecord record = scene.traceRay(ray).record;
+    if (i == 0) first_hit = record;
 
     if (record.hit) {
       const auto &material = *record.material;

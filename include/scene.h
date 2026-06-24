@@ -19,6 +19,10 @@ public:
 
   void buildBVH();
 
+  float getSceneSize();
+
+  float getSceneDepth();
+
 private:
   void subdivide(int node_index);
   std::vector<std::shared_ptr<Primitive>> primitives{};

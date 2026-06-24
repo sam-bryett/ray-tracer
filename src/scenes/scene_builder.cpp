@@ -126,7 +126,7 @@ Scene fuzzDemo()  {
       Vec3 colour = random_vec(0.0,1.0);
       Material sphereMaterial = Material{colour, smoothness};
       sphereMaterial.fuzz = fuzz;
-      fuzz += 0.2;
+      fuzz += 0.1;
       sphere_origin = sphere_origin + Vec3(1.5,0,0);
       sphere->setMaterial(sphereMaterial);
       scene.addPrimitive(sphere);

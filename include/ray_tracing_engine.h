@@ -1,14 +1,18 @@
 #pragma once
-#include "msaa.h"
 #include "vec3.h"
 #include <cstdint>
-#include <span>
+#include "oidn.h"
 
 class Camera;
 class Canvas;
 class Ray;
 class Sample;
+class HitRecord;
 class Scene;
+namespace ml {
+  class PixelFeatures;
+};
+
 
 constexpr Vec3 light_origin(-1, 1, -1);
 constexpr Vec3 light_colour(1, 1, 1);
@@ -25,9 +29,13 @@ public:
 
   void setMaxLightBounces(int light_bounces);
 
-  Vec3 calculateColour(Ray &ray, Scene &scene, uint32_t seed);
+  Vec3 calculateColour(Ray &ray, Scene &scene, HitRecord &record, uint32_t seed);
+  void setDenoiser(bool denoise_enabled); 
+  
 
 private:
   int samples_per_pixel = 1;
   int max_light_bounces = 10;
+  bool denoise_enabled = true;
+  Buffer buffer;
 };

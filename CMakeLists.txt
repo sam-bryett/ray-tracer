@@ -24,6 +24,13 @@ target_include_directories(RayTracerLib
   PRIVATE src
 )
 
+# Add Intel Open Image Denoise (OIDN)
+set(OIDN_DIR /opt/oidn)
+
+target_include_directories(RayTracerLib PUBLIC ${OIDN_DIR}/include)
+target_link_directories(RayTracerLib PUBLIC ${OIDN_DIR}/lib)
+target_link_libraries(RayTracerLib PUBLIC OpenImageDenoise)
+
 # Build example executable
 add_executable(main)
 target_sources(main
@@ -32,10 +39,4 @@ target_sources(main
 )
 target_link_libraries(main PRIVATE RayTracerLib)
 
-add_executable(debug_rng)
-target_sources(debug_rng
-  PRIVATE
-  examples/debug_rng.cpp
-)
-target_link_libraries(debug_rng PRIVATE RayTracerLib)
 

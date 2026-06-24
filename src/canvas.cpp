@@ -48,6 +48,12 @@ void Canvas::setPixelByIndex(Pixel pixel, int index) {
   pixels[index] = pixel;
 }
 
+void Canvas::setPixelByBuffer(const std::vector<float> &colours) {
+  for (int idx = 0; idx < height * width; idx++) {
+    auto pixel = Pixel{colours[idx * 3], colours[idx * 3 + 1], colours[idx * 3 + 2]};
+    setPixelByIndex(pixel, idx);
+  }
+}
 void Canvas::createImage() {
   writeHeader();
   for (Pixel pixel : pixels) {

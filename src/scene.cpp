@@ -67,6 +67,7 @@ void Scene::buildBVH() {
   if (!primitives.size()) {
     return;
   }
+
   this->nodes = std::vector<BVHNode>(2 * primitives.size() + 1);
   nodes[0].num_primitives = primitives.size();
   nodes[0].first_primitive = 0;
@@ -75,6 +76,21 @@ void Scene::buildBVH() {
 
   Vec3 box_colour = Vec3(0.15, 0.15, 0.18);
   int i = 0;
+}
+
+float Scene::getSceneSize() {
+  if (nodes.empty()) {
+    return 0.0f;
+  }
+  BVHNode &root = nodes[0];
+  return (root.max - root.min).length();
+}
+
+float Scene::getSceneDepth() {
+  if (nodes.empty()) return 0.0f;
+
+  BVHNode &root = nodes[0];
+  return root.max.z;
 }
 
 void Scene::subdivide(int node_index) {

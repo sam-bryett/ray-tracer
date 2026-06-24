@@ -21,6 +21,9 @@ Vec3 bsdf::calculateReflection(const Ray &incoming_ray,
       if (scatter_probability > material.smoothness) {
         light_colour = 0.5 * light_colour * material.colour;
         outgoing_ray_direction = surface_normal + random_unit_vec();
+        if (outgoing_ray_direction.length_squared() < 1e-8) {
+          outgoing_ray_direction = surface_normal;
+        }
 
       } else {
         light_colour = 0.5 * light_colour * material.colour;
@@ -29,7 +32,11 @@ Vec3 bsdf::calculateReflection(const Ray &incoming_ray,
         // Reflection formula
         outgoing_ray_direction = d - 2 * dotProduct(d, n) * n;
         auto fuzz = (material.fuzz < 1) ? material.fuzz : 1;
-        outgoing_ray_direction = normalise(outgoing_ray_direction) + (random_unit_vec() * fuzz);
+        auto outgoing_normal = normalise(outgoing_ray_direction);
+        outgoing_ray_direction = outgoing_normal + (random_unit_vec() * fuzz);
+        if (outgoing_ray_direction.length_squared() < 1e-8) {
+          outgoing_ray_direction = outgoing_normal;
+        }
       }
 
       // Return zero vector if no light reflected
