@@ -4,6 +4,7 @@ project(RayTracer LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 # Catch undefined behaviour
 #set(SANITIZER_FLAGS "-fsanitize=address,undefined -fno-omit-frame-pointer -g")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SANITIZER_FLAGS}")
@@ -24,6 +25,10 @@ target_include_directories(RayTracerLib
 
 # Add Intel Open Image Denoise (OIDN)
 set(OIDN_DIR /opt/oidn)
+
+# Add zlib for cnpy
+find_package(ZLIB REQUIRED)
+target_link_libraries(RayTracerLib PUBLIC ZLIB::ZLIB)
 
 target_include_directories(RayTracerLib PUBLIC ${OIDN_DIR}/include)
 target_link_directories(RayTracerLib PUBLIC ${OIDN_DIR}/lib)
