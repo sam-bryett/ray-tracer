@@ -1,4 +1,5 @@
 #include "ray_tracing_engine.h"
+#include "py_util.h"
 #include "ml/adaptive_sampling.h"
 #include "bsdf.h"
 #include "msaa.h"
@@ -50,6 +51,52 @@ void RayTracingEngine::render(Camera &camera, Scene &scene, Canvas &canvas) {
     c = toGamma(c);
   }
   canvas.setPixelByBuffer(buffer.color);
+}
+void RayTracingEngine::renderTrainingData(Camera &camera, Scene &scene, 
+                                           const std::string &out_dir,
+                                           int n_passes, int pass_spp) {
+  scene.buildBVH();
+  auto width  = camera.getImageWidth();
+  auto height = camera.getImageHeight();
+
+  Buffer gbuffer(width, height);
+
+  // independent passes at a low spp for training data
+  for (int p = 0; p < n_passes; p++) {
+
+      for (int j = 0; j < height; j++) {
+          for (int i = 0; i < width; i++) {
+              int idx = j * width + i;
+              Vec3 colour{};
+              HitRecord hit{};
+
+              for (int k = 0; k < pass_spp; k++) {
+                  Sample offset = sampleSquareOffset();
+                  Ray ray = camera.generateRay(i + offset.sx, j + offset.sy);
+                  colour = colour + calculateColour(ray, scene, hit, idx);
+              }
+              colour = colour / pass_spp;
+
+              // extract gbuffer from arbitrary (last) sample of first pass
+              if (p == 0) { 
+                addPixelData(buffer, idx, colour, hit);
+              }
+          }
+      }
+      
+      PyUtil::saveNpy(out_dir + "/pass_" + std::to_string(p) + ".npy", gbuffer.color,
+          height, width, 3);
+  }
+
+  // save gbuffer
+  PyUtil::saveNpy(out_dir + "/depth.npy", gbuffer.depth,
+      height, width, 3);
+  PyUtil::saveNpy(out_dir + "/normals.npy", gbuffer.normal, 
+      height, width, 3);
+  PyUtil::saveNpy(out_dir + "/albedo.npy", gbuffer.albedo, 
+      height, width, 3);
+  PyUtil::saveNpy(out_dir + "/valid.npy", gbuffer.valid, 
+      height, width);
 }
 
 void RayTracingEngine::setDenoiser(bool denoise_enabled) {

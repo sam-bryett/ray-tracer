@@ -31,6 +31,10 @@ public:
 
   Vec3 calculateColour(Ray &ray, Scene &scene, HitRecord &record, uint32_t seed);
   void setDenoiser(bool denoise_enabled); 
+
+  void renderTrainingData(Camera &camera, Scene &scene, const std::string &out_dir,
+                      int n_passes, int pass_spp);
+
   
 
 private:
